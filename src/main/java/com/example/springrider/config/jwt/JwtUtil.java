@@ -51,7 +51,7 @@ public class JwtUtil {
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
             return tokenValue.substring(7);
         }
-        throw new ServerException(ExceptionCode.NOTFOUND_JWT);
+        throw new ServerException(ExceptionCode.NOT_FOUND_JWT);
     }
 
     public Claims extractClaims(String token) {
