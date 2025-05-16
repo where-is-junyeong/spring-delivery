@@ -1,5 +1,6 @@
 package com.example.springrider.domain.user.service;
 
+import com.example.springrider.config.jwt.JwtUtil;
 import com.example.springrider.domain.user.dto.request.DeleteUserRequestDto;
 import com.example.springrider.domain.user.dto.request.LoginRequestDto;
 
@@ -11,9 +12,9 @@ import com.example.springrider.domain.user.repository.UserRepository;
 import com.example.springrider.global.exception.AuthException;
 import com.example.springrider.global.exception.ExceptionCode;
 import com.example.springrider.global.exception.InvalidRequestException;
-import com.example.springrider.global.security.DefaultPasswordEncoder;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,8 +22,8 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final DefaultPasswordEncoder defaultPasswordEncoder;
-
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     public User findById(Long userId) {
         return userRepository.findById(userId)
@@ -37,15 +38,20 @@ public class UserService {
      * @return 회원가입된 유저 정보가 담긴 {@link SignupResponseDto}
      */
     public SignupResponseDto signup(SignupRequestDto requestDto) {
+
         if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new InvalidRequestException(ExceptionCode.EMAIL_ALREADY_USED);
         }
 
-        String encodedPassword = defaultPasswordEncoder.encode(requestDto.getPassword());
+        String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
         User user = User.of(requestDto, encodedPassword, false);
 
         User savedUser = userRepository.save(user);
-        return SignupResponseDto.of(savedUser);
+
+
+        String bearerToken = jwtUtil.createToken(savedUser.getId(), savedUser.getEmail());
+
+        return new SignupResponseDto(bearerToken);
     }
 
     /**
@@ -61,11 +67,13 @@ public class UserService {
             throw new AuthException(ExceptionCode.ALREADY_DELETED_USER);
         }
 
-        if (!defaultPasswordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new AuthException(ExceptionCode.PASSWORD_NOT_MATCH);
         }
 
-        return LoginResponseDto.of(user);
+        String bearerToken = jwtUtil.createToken(user.getId(),user.getEmail());
+
+        return new LoginResponseDto(bearerToken);
     }
 
     /**
@@ -91,7 +99,7 @@ public class UserService {
         }
 
         // 비밀번호 일치 체크
-        if (!defaultPasswordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new AuthException(ExceptionCode.PASSWORD_NOT_MATCH);
         }
 

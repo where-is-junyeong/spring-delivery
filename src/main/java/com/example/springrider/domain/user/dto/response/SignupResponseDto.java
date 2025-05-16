@@ -9,23 +9,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SignupResponseDto {
 
-    private final Long userId;
-    private final String email;
-    private final String nickname;
-    private final String phone;
-    private final String role;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime modifiedAt;
+    private final String bearerToken;
 
-    public static SignupResponseDto of(User user) {
-        return new SignupResponseDto(
-            user.getId(),
-            user.getEmail(),
-            user.getNickname(),
-            user.getPhone(),
-            user.getRole().name(),
-            user.getCreatedAt(),
-            user.getModifiedAt()
-        );
-    }
 }

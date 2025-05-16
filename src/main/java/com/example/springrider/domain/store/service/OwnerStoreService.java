@@ -11,7 +11,6 @@ import com.example.springrider.domain.store.entity.Store;
 import com.example.springrider.domain.store.enums.StoreStatus;
 import com.example.springrider.domain.store.repository.StoreRepository;
 import com.example.springrider.domain.user.entity.User;
-import com.example.springrider.domain.user.repository.UserRepository;
 import com.example.springrider.global.exception.InvalidRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,18 +21,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class OwnerStoreService {
 
     private final StoreRepository storeRepository;
-    private final UserRepository userRepository;
     /**
      * 가게 생성
      *
      * @param storeRequestDto 가게 생성 요청 dto
-     * @param userId          로그인한 유저의 고유 식별자
+     * @param user         로그인한 유저의 고유 식별자
      * @return 가게 정보 + 유저 이름을 savedStore에 저장
      */
     @Transactional
-    public StoreResponseDto create(StoreRequestDto storeRequestDto, Long userId) {
-
-        User user = userRepository.findByIdOrElseThrow(userId);
+    public StoreResponseDto create(StoreRequestDto storeRequestDto, User user) {
 
         // store에 있는 스태틱 메소드 StoreInfo에 가게정보와 유저의정보(유저이름)을 담고
         // 객체 store 생성
@@ -50,15 +46,12 @@ public class OwnerStoreService {
      *
      * @param storeId    가게 고유 식별자
      * @param requestDto 가게 수정 요청 dto
-     * @param userId     유저 고유 식별자
+     * @param user    유저 고유 식별자
      * @return 수정된 가게 정보
      */
     @Transactional
     public StoreResponseDto update(
-        Long storeId, UpdateStoreRequestDto requestDto, Long userId
-    ) {
-
-        User user = userRepository.findByIdOrElseThrow(userId);
+        Long storeId, UpdateStoreRequestDto requestDto, User user) {
 
         // 가게가 존재하는지 확인하는 코드
         Store store = storeRepository.findByIdOrElseThrow(storeId);
@@ -96,10 +89,8 @@ public class OwnerStoreService {
 
     @Transactional
     public StoreResponseDto delete(
-            Long storeId, Long userId
+            Long storeId, User user
     ) {
-
-        User user = userRepository.findByIdOrElseThrow(userId);
 
         // 가게가 존재하는지 확인하는 코드
         Store store = storeRepository.findByIdOrElseThrow(storeId);

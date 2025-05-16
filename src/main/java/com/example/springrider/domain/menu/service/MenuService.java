@@ -7,6 +7,7 @@ import com.example.springrider.domain.menu.entity.Menu;
 import com.example.springrider.domain.menu.repository.MenuRepository;
 import com.example.springrider.domain.store.entity.Store;
 import com.example.springrider.domain.store.repository.StoreRepository;
+import com.example.springrider.domain.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class MenuService {
      * @param requestDto 메뉴 정보가 담긴 {@link MenuRequestDto}
      */
     @StoreOwnerCheck(userIdParam = "userId", storeIdParam = "storeId")
-    public MenuResponseDto create(Long userId, Long storeId, MenuRequestDto requestDto) {
+    public MenuResponseDto create(User user, Long storeId, MenuRequestDto requestDto) {
         Store findStore = storeRepository.findByIdOrElseThrow(storeId);
         Menu menu = new Menu(requestDto);
         menu.setStore(findStore);
@@ -41,14 +42,14 @@ public class MenuService {
      *
      * @param storeId    가게 아이디
      * @param menuId     메뉴 아이디
-     * @param userId     유저 아이디 (인터셉터로 처리 예정)
+     * @param user     유저 아이디 (인터셉터로 처리 예정)
      * @param requestDto 수정할 메뉴 정보가 담긴 {@link MenuRequestDto}
      * @return 수정된 메뉴 정보가 담긴 {@link MenuResponseDto}
      */
     @Transactional
     @StoreOwnerCheck(userIdParam = "userId", storeIdParam = "storeId")
     public MenuResponseDto update(
-        Long storeId, Long menuId, Long userId, MenuRequestDto requestDto
+        Long storeId, Long menuId, User user, MenuRequestDto requestDto
     ) {
         Menu findMenu = menuRepository.findByIdOrElseThrow(menuId);
         findMenu.updateMenu(requestDto);
@@ -61,11 +62,11 @@ public class MenuService {
      *
      * @param storeId 가게 식별자
      * @param menuId  메뉴 식별자
-     * @param userId  유저 식별자
+     * @param user  유저 식별자
      */
     @Transactional
     @StoreOwnerCheck(userIdParam = "userId", storeIdParam = "storeId")
-    public MenuResponseDto delete(Long storeId, Long menuId, Long userId) {
+    public MenuResponseDto delete(Long storeId, Long menuId, User user) {
         Menu findMenu = menuRepository.findByIdOrElseThrow(menuId);
         findMenu.deleteMenu();
 
