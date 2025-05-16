@@ -18,7 +18,6 @@ public class StoreResponseDto {
     private final LocalTime closeTime;
     private final Integer minOrderPrice;
     private final StoreStatus status;
-    private final String ownerName;
 
     public static StoreResponseDto of(Store store) {
         return new StoreResponseDto(
@@ -29,8 +28,7 @@ public class StoreResponseDto {
             store.getOpenTime(),
             store.getCloseTime(),
             store.getMinOrderPrice(),
-            store.getStatus(),
-            store.getUser().getName()  // 여기서 바로 유저 이름 꺼내옴
+            store.getStatus()
         );
     }
 }

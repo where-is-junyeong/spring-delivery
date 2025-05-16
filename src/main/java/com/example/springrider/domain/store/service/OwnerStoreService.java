@@ -2,7 +2,6 @@ package com.example.springrider.domain.store.service;
 
 import static com.example.springrider.global.exception.ExceptionCode.STORE_INVALID_STATUS_CHANGE;
 import static com.example.springrider.global.exception.ExceptionCode.STORE_INVALID_TIME;
-import static com.example.springrider.global.exception.ExceptionCode.STORE_LIMIT_EXCEEDED;
 import static com.example.springrider.global.exception.ExceptionCode.STORE_USER_MISMATCH;
 
 import com.example.springrider.domain.store.dto.request.StoreRequestDto;
@@ -24,7 +23,6 @@ public class OwnerStoreService {
 
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
-
     /**
      * 가게 생성
      *
@@ -36,12 +34,6 @@ public class OwnerStoreService {
     public StoreResponseDto create(StoreRequestDto storeRequestDto, Long userId) {
 
         User user = userRepository.findByIdOrElseThrow(userId);
-
-        // 가게 수가 3개가 넘으면 예외 처리
-        long storeCount = storeRepository.countByUser(user);
-        if (storeCount >= 3) {
-            throw new InvalidRequestException(STORE_LIMIT_EXCEEDED);
-        }
 
         // store에 있는 스태틱 메소드 StoreInfo에 가게정보와 유저의정보(유저이름)을 담고
         // 객체 store 생성
@@ -83,12 +75,6 @@ public class OwnerStoreService {
         if (store.getStatus() != newStatus) {
             switch (newStatus) {
                 case ACTIVE -> {
-                    long activeStoreCount = storeRepository.countByUserAndStatus(user,
-                        StoreStatus.ACTIVE);
-                    // 사장님이 가지고 있는 ACTIVE 상태의 가게 수가 3개가 넘으면 예외처리
-                    if (activeStoreCount >= 3) {
-                        throw new InvalidRequestException(STORE_LIMIT_EXCEEDED);
-                    }
                     store.changeStatus(StoreStatus.ACTIVE);
                 }
                 // CLOSED 상태에서 또 CLOSED로 변경해도 괜찮음 (수정할 때 store status를 받아야 함)
@@ -104,6 +90,32 @@ public class OwnerStoreService {
 
         // 가게 정보 수정
         store.update(requestDto);
+
+        return StoreResponseDto.of(store);
+    }
+
+    @Transactional
+    public StoreResponseDto delete(
+            Long storeId, Long userId
+    ) {
+
+        User user = userRepository.findByIdOrElseThrow(userId);
+
+        // 가게가 존재하는지 확인하는 코드
+        Store store = storeRepository.findByIdOrElseThrow(storeId);
+
+        // 지금 로그인한 유저가 사장이 맞는지 확인
+        if (!store.getUser().getId().equals(user.getId())) {
+            throw new InvalidRequestException(STORE_USER_MISMATCH);
+        }
+
+        // 현재 가게 상태와 입력받은 상태가 다를 때
+        if (store.getStatus() == StoreStatus.ACTIVE) {
+                // CLOSED 상태에서 또 CLOSED로 변경해도 괜찮음 (수정할 때 store status를 받아야 함)
+                store.changeStatus(StoreStatus.CLOSED);
+        }
+
+        store.delete();
 
         return StoreResponseDto.of(store);
     }

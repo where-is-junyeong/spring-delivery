@@ -12,7 +12,6 @@ public class LoginResponseDto {
 
     private final Long userId;
     private final String email;
-    private final String username;
     private final String nickname;
     private final String phone;
     private final LocalDateTime createdAt;
@@ -23,7 +22,6 @@ public class LoginResponseDto {
         return new LoginResponseDto(
             user.getId(),
             user.getEmail(),
-            user.getName(),
             user.getNickname(),
             user.getPhone(),
             user.getCreatedAt(),

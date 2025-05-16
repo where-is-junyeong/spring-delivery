@@ -21,12 +21,8 @@ public class UserStoreController {
 
     private final UserStoreService userStoreService;
 
-    /**
-     * 모든 (ACTIVE)상태의 가게 목록 조회
-     *
-     * @return 오픈 상태의 가게를 리스트형태로 store에 담아 Map 형태로 반환함
-     */
-    @GetMapping("/customers/stores")
+    //가게 전체
+    @GetMapping("/stores")
     public ApiResponse<Map<String, List<FindAllStoreResponseDto>>> finds() {
         List<FindAllStoreResponseDto> stores = userStoreService.finds();
         // HTTP 응답 포맷
@@ -36,13 +32,8 @@ public class UserStoreController {
         return ApiResponse.ok(response);
     }
 
-    /**
-     * 가게 단건 조회
-     *
-     * @param storeId 조회할 가게 고유 식별자
-     * @return 가게의 상세 정보
-     */
-    @GetMapping("/customers/stores/{storeId}")
+    //가게 세부 조회
+    @GetMapping("/stores/{storeId}")
     public ApiResponse<FindStoreResponseDto> find(@PathVariable Long storeId) {
         FindStoreResponseDto response = userStoreService.find(storeId);
         return ApiResponse.ok(response);

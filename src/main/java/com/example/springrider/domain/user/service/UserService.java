@@ -2,8 +2,7 @@ package com.example.springrider.domain.user.service;
 
 import com.example.springrider.domain.user.dto.request.DeleteUserRequestDto;
 import com.example.springrider.domain.user.dto.request.LoginRequestDto;
-import com.example.springrider.domain.user.dto.request.PasswordModifyRequestDto;
-import com.example.springrider.domain.user.dto.request.ProfileModifyRequestDto;
+
 import com.example.springrider.domain.user.dto.request.SignupRequestDto;
 import com.example.springrider.domain.user.dto.response.LoginResponseDto;
 import com.example.springrider.domain.user.dto.response.SignupResponseDto;
@@ -43,7 +42,7 @@ public class UserService {
         }
 
         String encodedPassword = defaultPasswordEncoder.encode(requestDto.getPassword());
-        User user = User.of(requestDto, encodedPassword, false, 0);
+        User user = User.of(requestDto, encodedPassword, false);
 
         User savedUser = userRepository.save(user);
         return SignupResponseDto.of(savedUser);
@@ -102,25 +101,6 @@ public class UserService {
     }
 
     /**
-     * 비밀번호 수정 요청 서비스
-     *
-     * @param requestDto 비밀번호 정보가 담긴 {@link PasswordModifyRequestDto}
-     * @param userId     유저 식별자
-     */
-    public void modifyPassword(PasswordModifyRequestDto requestDto, Long userId) {
-        User user = userRepository.findByIdOrElseThrow(userId);
-
-        if (!defaultPasswordEncoder.matches(requestDto.getOldPassword(), user.getPassword())) {
-            throw new AuthException(ExceptionCode.PASSWORD_NOT_MATCH);
-        }
-
-        String newEncodedPassword = defaultPasswordEncoder.encode(requestDto.getNewPassword());
-
-        user.updatePassword(newEncodedPassword);
-        userRepository.save(user);
-    }
-
-    /**
      * 로그아웃 요청 서비스
      *
      * @param session 세션 정보
@@ -131,26 +111,6 @@ public class UserService {
         }
 
         session.invalidate(); // 현재 로그인 세션 제거
-    }
-
-    public void updateProfile(ProfileModifyRequestDto requestDto, Long userId) {
-        User user = userRepository.findByIdOrElseThrow(userId);
-
-        // 비밀번호 검증
-        if (!defaultPasswordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-            throw new AuthException(ExceptionCode.PASSWORD_NOT_MATCH);
-        }
-
-        //  닉네임 중복 확인
-        if (userRepository.existsByNicknameAndIdNot(requestDto.getNickname(), userId)) {
-            throw new InvalidRequestException(ExceptionCode.NICKNAME_ALREADY_USED);
-        }
-
-        // 수정
-        user.modifyProfile(requestDto.getNickname(), requestDto.getPhone());
-
-        // 저장
-        userRepository.save(user);
     }
 
 }

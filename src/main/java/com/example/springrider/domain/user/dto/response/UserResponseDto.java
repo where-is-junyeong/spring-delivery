@@ -12,7 +12,6 @@ public class UserResponseDto {
 
     private final Long userId;
     private final String email;
-    private final String name;
     private final String nickname;
     private final String phone;
     private final UserRole role;
@@ -23,7 +22,6 @@ public class UserResponseDto {
         return new UserResponseDto(
             user.getId(),
             user.getEmail(),
-            user.getName(),
             user.getNickname(),
             user.getPhone(),
             user.getRole(),

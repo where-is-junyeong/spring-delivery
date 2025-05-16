@@ -58,6 +58,8 @@ public class Store extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private StoreStatus status;
 
+    private Boolean isDeleted = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -97,6 +99,10 @@ public class Store extends BaseEntity {
         this.openTime = dto.getOpenTime();
         this.closeTime = dto.getCloseTime();
         this.minOrderPrice = dto.getMinOrderPrice();
+    }
+
+    public void delete(){
+        this.isDeleted = true;
     }
 
     public void changeStatus(StoreStatus newStatus) {

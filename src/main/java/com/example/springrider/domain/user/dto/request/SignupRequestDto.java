@@ -23,9 +23,6 @@ public class SignupRequestDto {
         message = "비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.")
     private String password;
 
-    @NotBlank
-    private String name;
-
     @NotBlank(message = "닉네임은 필수입니다.")
     @Size(max = 15, message = "닉네임은 15자 이내여야 합니다.")
     private String nickname;

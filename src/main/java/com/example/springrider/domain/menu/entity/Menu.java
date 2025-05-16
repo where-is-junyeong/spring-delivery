@@ -33,7 +33,7 @@ public class Menu extends BaseEntity {
     @Column(nullable = false, length = 35)
     private String category;
 
-    @Column(nullable = false)
+    @Column(name = "is_deleted")
     private Boolean isDeleted;
 
     @ManyToOne(fetch = FetchType.LAZY)

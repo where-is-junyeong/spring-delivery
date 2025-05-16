@@ -26,9 +26,6 @@ public class User extends BaseEntity {
     private String password;
 
     @Column(nullable = false, length = 35)
-    private String name;
-
-    @Column(nullable = false, length = 35)
     private String nickname;
 
     @Column(nullable = false, length = 15)
@@ -41,21 +38,17 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private Boolean isWithdraw;
 
-    @Column(nullable = false)
-    private Integer storeCount;
 
     public static User of(
-        SignupRequestDto dto, String password, boolean isWithdraw, int storeCount
+        SignupRequestDto dto, String password, boolean isWithdraw
     ) {
         return new User(
             dto.getEmail(),
             password,
-            dto.getName(),
             dto.getNickname(),
             dto.getPhone(),
             dto.getRole(),
-            isWithdraw,
-            storeCount
+            isWithdraw
         );
     }
 
