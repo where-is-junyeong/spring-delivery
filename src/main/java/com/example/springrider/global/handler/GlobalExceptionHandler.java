@@ -40,10 +40,10 @@ public class GlobalExceptionHandler {
     }
 
     // 예상치 못한 예외 핸들러
-    @ExceptionHandler(Exception.class)
-    public ApiResponse<?> handleGeneralException(Exception e) {
-        log.error("Catch General Exception : {}", e.getMessage());
-        return ApiResponse.fail(new ServerException(ExceptionCode.INTERNAL_SERVER_ERROR));
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ApiResponse<?> handleGeneralException(Exception e) {
+//        log.error("Catch General Exception : {}", e.getMessage());
+//        return ApiResponse.fail(new ServerException(ExceptionCode.INTERNAL_SERVER_ERROR));
+//    }
 
 }

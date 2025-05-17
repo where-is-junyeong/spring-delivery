@@ -26,7 +26,7 @@ public class UserController {
 
     private final UserService userService;
 
-    //로그인
+    //회원가입
     @PostMapping("/signup")
     public ApiResponse<SignupResponseDto> signup(@Valid @RequestBody SignupRequestDto requestDto) {
         return ApiResponse.created(userService.signup(requestDto));
@@ -35,9 +35,8 @@ public class UserController {
     @PostMapping("/login")
     public ApiResponse<LoginResponseDto> login(
         @Valid @RequestBody LoginRequestDto requestDto, HttpSession session) {
-        LoginResponseDto responseDto = userService.login(requestDto);
-        session.setAttribute("userId", responseDto.getUserId());
-        return ApiResponse.ok(responseDto);
+
+        return ApiResponse.ok(userService.login(requestDto));
     }
     //로그아웃
     @DeleteMapping("/logout")

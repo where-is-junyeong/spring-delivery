@@ -13,6 +13,7 @@ public enum ExceptionCode {
     ALREADY_LOGGED_IN("이미 로그인된 상태입니다."),
     UNAUTHORIZED("로그인 후 이용 가능합니다."),
     FORBIDDEN_REQUEST("권한이 없는 요청입니다."),
+    NOT_FOUND_JWT("jwt를 찾을 수 없습니다."),
 
     // 회원
     USER_EXCEPTION("회원 예외 메세지"),

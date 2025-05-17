@@ -10,25 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LoginResponseDto {
 
-    private final Long userId;
-    private final String email;
-    private final String nickname;
-    private final String phone;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime modifiedAt;
-    private final UserRole role;
-
-    public static LoginResponseDto of(User user) {
-        return new LoginResponseDto(
-            user.getId(),
-            user.getEmail(),
-            user.getNickname(),
-            user.getPhone(),
-            user.getCreatedAt(),
-            user.getModifiedAt(),
-            user.getRole()
-        );
-    }
+    private final String bearerToken;
 
 }
 

@@ -1,6 +1,7 @@
 package com.example.springrider.domain.store.controller;
 
 import com.example.springrider.config.Const;
+import com.example.springrider.config.security.CustomUserPrincipal;
 import com.example.springrider.domain.store.dto.request.StoreRequestDto;
 import com.example.springrider.domain.store.dto.request.UpdateStoreRequestDto;
 import com.example.springrider.domain.store.dto.response.StoreResponseDto;
@@ -8,6 +9,7 @@ import com.example.springrider.domain.store.service.OwnerStoreService;
 import com.example.springrider.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,9 +23,9 @@ public class OwnerStoreController {
     @PostMapping("/stores")
     public ApiResponse<StoreResponseDto> create(
         @Valid @RequestBody StoreRequestDto storeRequestDto,
-        @SessionAttribute(name = Const.SESSION_USER_ID) Long userId
+        @AuthenticationPrincipal CustomUserPrincipal userPrincipal
     ) {
-        return ApiResponse.created(ownerStoreService.create(storeRequestDto, userId));
+        return ApiResponse.created(ownerStoreService.create(storeRequestDto, userPrincipal.getUser()));
     }
 
     //가게 수정
@@ -31,16 +33,16 @@ public class OwnerStoreController {
     public ApiResponse<StoreResponseDto> update(
         @Valid @RequestBody UpdateStoreRequestDto requestDto,
         @PathVariable Long storeId,
-        @SessionAttribute(name = Const.SESSION_USER_ID, required = false) Long userId
+        @AuthenticationPrincipal CustomUserPrincipal userPrincipal
     ) {
-        return ApiResponse.ok(ownerStoreService.update(storeId, requestDto, userId));
+        return ApiResponse.ok(ownerStoreService.update(storeId, requestDto, userPrincipal.getUser()));
     }
 
     @DeleteMapping("/stores/{storeId}")
     public ApiResponse<StoreResponseDto> delete(
             @PathVariable Long storeId,
-            @SessionAttribute(name = Const.SESSION_USER_ID, required = false) Long userId
+            @AuthenticationPrincipal CustomUserPrincipal userPrincipal
     ) {
-        return ApiResponse.ok(ownerStoreService.delete(storeId, userId));
+        return ApiResponse.ok(ownerStoreService.delete(storeId, userPrincipal.getUser()));
     }
 }
