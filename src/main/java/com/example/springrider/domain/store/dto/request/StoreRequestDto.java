@@ -23,6 +23,9 @@ public class StoreRequestDto {
     @NotBlank(message = "음식 장르는 필수입니다.")
     private String category;
 
+    @NotBlank(message = "가게 설명은 필수입니다.")
+    private String description;
+
     @NotNull(message = "오픈 시간은 필수입니다.")
     private LocalTime openTime;
 

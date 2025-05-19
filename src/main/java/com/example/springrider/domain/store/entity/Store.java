@@ -37,7 +37,7 @@ import org.hibernate.annotations.BatchSize;
 @NoArgsConstructor
 public class Store extends BaseEntity {
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 50)
     private String name;
 
     @Column(nullable = false, length = 100)
@@ -45,6 +45,9 @@ public class Store extends BaseEntity {
 
     @Column(nullable = false, length = 35)
     private String category;
+
+    @Column(nullable = false)
+    private String description;
 
     @Column(nullable = false)
     private LocalTime openTime;

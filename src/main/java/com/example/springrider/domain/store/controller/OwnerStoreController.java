@@ -29,7 +29,7 @@ public class OwnerStoreController {
     }
 
     //가게 수정
-    @PatchMapping("/stores/{storedId}")
+    @PatchMapping("/stores/{storeId}")
     public ApiResponse<StoreResponseDto> update(
         @Valid @RequestBody UpdateStoreRequestDto requestDto,
         @PathVariable Long storeId,

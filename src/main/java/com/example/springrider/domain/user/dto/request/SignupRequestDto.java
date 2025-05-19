@@ -27,11 +27,6 @@ public class SignupRequestDto {
     @Size(max = 15, message = "닉네임은 15자 이내여야 합니다.")
     private String nickname;
 
-    @Size(max = 15)
-    @Pattern(regexp = "^\\d{3}-\\d{4}-\\d{4}$",
-        message = "전화번호는 000-0000-0000 형식이어야 합니다.")
-    private String phone;
-
     @NotNull(message = "권한은 필수입니다.")
     private UserRole role;
 }

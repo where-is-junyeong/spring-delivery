@@ -19,17 +19,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class User extends BaseEntity {
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(nullable = false, unique = true, length = 50)
     private String email;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, length = 35)
+    @Column(nullable = false, length = 50)
     private String nickname;
-
-    @Column(nullable = false, length = 15)
-    private String phone;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -46,7 +43,6 @@ public class User extends BaseEntity {
             dto.getEmail(),
             password,
             dto.getNickname(),
-            dto.getPhone(),
             dto.getRole(),
             isWithdraw
         );
@@ -62,8 +58,6 @@ public class User extends BaseEntity {
 
     public void modifyProfile(String nickname, String phone) {
         this.nickname = nickname;
-        this.phone = phone;
     }
-
 
 }

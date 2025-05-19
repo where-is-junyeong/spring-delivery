@@ -13,6 +13,7 @@ public class FindAllStoreResponseDto {
     private final String name;
     private final String address;
     private final String category;
+    private final String description;
     private final Integer minOrderPrice;
     private final LocalTime openTime;
     private final LocalTime closeTime;
@@ -23,6 +24,7 @@ public class FindAllStoreResponseDto {
             store.getName(),
             store.getAddress(),
             store.getCategory(),
+            store.getDescription(),
             store.getMinOrderPrice(),
             store.getOpenTime(),
             store.getCloseTime()
