@@ -13,7 +13,6 @@ public class UserResponseDto {
     private final Long userId;
     private final String email;
     private final String nickname;
-    private final String phone;
     private final UserRole role;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
@@ -23,7 +22,6 @@ public class UserResponseDto {
             user.getId(),
             user.getEmail(),
             user.getNickname(),
-            user.getPhone(),
             user.getRole(),
             user.getCreatedAt(),
             user.getModifiedAt()
