@@ -16,6 +16,7 @@ public class FindStoreResponseDto {
     private final String name;
     private final String address;
     private final String category;
+    private final String description;
     private final LocalTime openTime;
     private final LocalTime closeTime;
     private final Integer minOrderPrice;
@@ -31,6 +32,7 @@ public class FindStoreResponseDto {
             store.getName(),
             store.getAddress(),
             store.getCategory(),
+            store.getDescription(),
             store.getOpenTime(),
             store.getCloseTime(),
             store.getMinOrderPrice(),
