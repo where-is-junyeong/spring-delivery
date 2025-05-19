@@ -30,14 +30,7 @@ public class OwnerStoreService {
      */
     @Transactional
     public StoreResponseDto create(StoreRequestDto storeRequestDto, User user) {
-
-        // store에 있는 스태틱 메소드 StoreInfo에 가게정보와 유저의정보(유저이름)을 담고
-        // 객체 store 생성
-        Store store = Store.StoreInfo(storeRequestDto, user);
-
-        // 저장
-        Store savedStore = storeRepository.save(store);
-
+        Store savedStore = storeRepository.save(Store.of(storeRequestDto, user));
         return StoreResponseDto.of(savedStore);
     }
 
