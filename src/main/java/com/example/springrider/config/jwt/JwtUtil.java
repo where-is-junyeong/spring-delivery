@@ -21,7 +21,9 @@ import java.util.Date;
 public class JwtUtil {
 
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
+
+    @Value("${jwt.token.exp}")
+    private long tokenTime;
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -41,7 +43,7 @@ public class JwtUtil {
                 Jwts.builder()
                         .setSubject(String.valueOf(userId))// email로 변화 OK, 바뀔필요성 X
                         .claim("email", email)
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME))
+                        .setExpiration(new Date(date.getTime() + tokenTime))
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                         .compact();
