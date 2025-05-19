@@ -19,6 +19,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,29 +74,19 @@ public class Store extends BaseEntity {
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Menu> menus = new ArrayList<>();
 
-    public Store(String name, String address, String category, LocalTime openTime,
-        LocalTime closeTime, Integer minOrderPrice, StoreStatus status, User user) {
-        this.name = name;
-        this.address = address;
-        this.category = category;
-        this.openTime = openTime;
-        this.closeTime = closeTime;
-        this.minOrderPrice = minOrderPrice;
-        this.status = status;
-        this.user = user;
-    }
-
-    public static Store StoreInfo(StoreRequestDto storeRequestDto, User user) {
-        return new Store(
-            storeRequestDto.getName(),
-            storeRequestDto.getAddress(),
-            storeRequestDto.getCategory(),
-            storeRequestDto.getOpenTime(),
-            storeRequestDto.getCloseTime(),
-            storeRequestDto.getMinOrderPrice(),
-            StoreStatus.ACTIVE,
-            user
-        );
+    public static Store of(StoreRequestDto dto, User user){
+        return Store.builder()
+            .name(dto.getName())
+            .address(dto.getAddress())
+            .category(dto.getCategory())
+            .description(dto.getDescription())
+            .openTime(dto.getOpenTime())
+            .closeTime(dto.getCloseTime())
+            .minOrderPrice(dto.getMinOrderPrice())
+            .status(StoreStatus.ACTIVE)
+            .isDeleted(false)
+            .user(user)
+            .build();
     }
 
     public void update(UpdateStoreRequestDto dto) {
