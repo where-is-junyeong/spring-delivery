@@ -25,7 +25,7 @@ public class MenuService {
      * @param storeId    메뉴를 등록할 가게
      * @param requestDto 메뉴 정보가 담긴 {@link MenuRequestDto}
      */
-    @StoreOwnerCheck(userIdParam = "userId", storeIdParam = "storeId")
+//    @StoreOwnerCheck(userIdParam = "userId", storeIdParam = "storeId")
     public MenuResponseDto create(User user, Long storeId, MenuRequestDto requestDto) {
         Store findStore = storeRepository.findByIdOrElseThrow(storeId);
         Menu menu = new Menu(requestDto);
@@ -47,7 +47,7 @@ public class MenuService {
      * @return 수정된 메뉴 정보가 담긴 {@link MenuResponseDto}
      */
     @Transactional
-    @StoreOwnerCheck(userIdParam = "userId", storeIdParam = "storeId")
+//    @StoreOwnerCheck(userIdParam = "userId", storeIdParam = "storeId")
     public MenuResponseDto update(
         Long storeId, Long menuId, User user, MenuRequestDto requestDto
     ) {
@@ -65,7 +65,7 @@ public class MenuService {
      * @param user  유저 식별자
      */
     @Transactional
-    @StoreOwnerCheck(userIdParam = "userId", storeIdParam = "storeId")
+//    @StoreOwnerCheck(userIdParam = "userId", storeIdParam = "storeId")
     public MenuResponseDto delete(Long storeId, Long menuId, User user) {
         Menu findMenu = menuRepository.findByIdOrElseThrow(menuId);
         findMenu.deleteMenu();
