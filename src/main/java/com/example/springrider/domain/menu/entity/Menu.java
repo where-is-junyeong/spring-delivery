@@ -28,7 +28,7 @@ public class Menu extends BaseEntity {
     private Integer price;
 
     @Column(nullable = false, length = 20)
-    private String contents;
+    private String description;
 
     @Column(nullable = false, length = 35)
     private String category;
@@ -45,7 +45,7 @@ public class Menu extends BaseEntity {
     public Menu(MenuRequestDto requestDto) {
         this.name = requestDto.getName();
         this.price = requestDto.getPrice();
-        this.contents = requestDto.getContents();
+        this.description = requestDto.getDescription();
         this.category = requestDto.getCategory();
         this.isDeleted = false;
     }
@@ -53,7 +53,7 @@ public class Menu extends BaseEntity {
     public void updateMenu(MenuRequestDto requestDto) {
         this.name = requestDto.getName();
         this.price = requestDto.getPrice();
-        this.contents = requestDto.getContents();
+        this.description = requestDto.getDescription();
         this.category = requestDto.getCategory();
     }
 

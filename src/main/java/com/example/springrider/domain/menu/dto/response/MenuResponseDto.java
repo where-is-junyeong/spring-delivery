@@ -23,7 +23,7 @@ public class MenuResponseDto {
             menu.getId(),
             menu.getName(),
             menu.getPrice(),
-            menu.getContents(),
+            menu.getDescription(),
             menu.getCategory(),
             menu.getIsDeleted(),
             menu.getCreatedAt(),

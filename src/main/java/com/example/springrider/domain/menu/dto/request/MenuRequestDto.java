@@ -16,7 +16,7 @@ public class MenuRequestDto {
     private final Integer price;
 
     @NotBlank(message = "음식 설명은 필수입니다.")
-    private final String contents;
+    private final String description;
 
     @NotBlank(message = "음식 장르는 필수입니다.")
     private final String category;
