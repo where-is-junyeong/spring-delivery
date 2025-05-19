@@ -24,6 +24,7 @@ public class SpringRiderApplication {
         System.setProperty("DB_PASSWORD", dotenv.get("DB_PASSWORD"));
         System.setProperty("spring.profiles.default", "dev");
 //        System.setProperty("spring.profiles.default", "prod");
+        System.setProperty("JWT_KEY",dotenv.get("JWT_KEY"));
 
         SpringApplication.run(SpringRiderApplication.class, args);
     }
