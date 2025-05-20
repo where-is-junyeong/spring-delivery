@@ -23,27 +23,47 @@ public class SearchController {
 
     private final SearchService searchService;
 
-    @GetMapping
-    public ApiResponse<Map<String, Page<FindAllStoreResponseDto>>> search(
+    @GetMapping("/v1")
+    public ApiResponse<Map<String, Page<FindAllStoreResponseDto>>> searchV1(
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int size,
         @RequestParam(value = "keyword", required = false) String keyword
     ) {
-        Page<FindAllStoreResponseDto> stores = searchService.search(keyword, initPageable(page, size));
+        Page<FindAllStoreResponseDto> stores = searchService.searchV1(keyword, initPageable(page, size));
         Map<String, Page<FindAllStoreResponseDto>> response = new HashMap<>();
         response.put("stores", stores);
 
         return ApiResponse.ok(response);
     }
 
-    @GetMapping("/trending")
-    public ApiResponse<List<TrendingKeywordResponseDto>> trending(
+    @GetMapping("/v1/trending")
+    public ApiResponse<List<TrendingKeywordResponseDto>> trendingV1(
         @RequestParam(defaultValue = "10") Long rank
-    ){
-        return ApiResponse.ok(searchService.trending(rank));
+    ) {
+        return ApiResponse.ok(searchService.trendingV1(rank));
     }
 
-    private Pageable initPageable(int page, int size){
+    @GetMapping("/v2")
+    public ApiResponse<Map<String, Page<FindAllStoreResponseDto>>> searchV2(
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(value = "keyword", required = false) String keyword
+    ) {
+        Page<FindAllStoreResponseDto> stores = searchService.searchV2(keyword, initPageable(page, size));
+        Map<String, Page<FindAllStoreResponseDto>> response = new HashMap<>();
+        response.put("stores", stores);
+
+        return ApiResponse.ok(response);
+    }
+
+    @GetMapping("/v2/trending")
+    public ApiResponse<List<TrendingKeywordResponseDto>> trendingV2(
+        @RequestParam(defaultValue = "10") Long rank
+    ) {
+        return ApiResponse.ok(searchService.trendingV2(rank));
+    }
+
+    private Pageable initPageable(int page, int size) {
         return PageRequest.of(page - 1, size);
     }
 
