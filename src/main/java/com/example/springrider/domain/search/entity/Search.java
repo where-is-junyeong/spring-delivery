@@ -47,7 +47,7 @@ public class Search {
             .build();
     }
 
-    public void count() {
+    public void increaseCount() {
         if (this.count == null) {
             this.count = 0L;
         }
