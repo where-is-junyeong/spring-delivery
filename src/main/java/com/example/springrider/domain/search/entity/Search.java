@@ -31,7 +31,7 @@ public class Search {
     private String keyword;
 
     @Column
-    private Integer count;
+    private Long count;
 
     @Column
     @CreatedDate
@@ -46,7 +46,7 @@ public class Search {
             .build();
     }
 
-    public static Search of(String keyword, Integer count) {
+    public static Search of(String keyword, Long count) {
 //        return new Search(keyword, count);
         return Search.builder()
             .keyword(keyword)
