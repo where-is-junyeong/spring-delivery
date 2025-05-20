@@ -61,7 +61,7 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository{
         if (StringUtil.isNullOrEmpty(keyword)) {
             return null;
         }
-        return store.name.contains(keyword).or(menu.name.containsIgnoreCase(keyword));
+        return store.name.containsIgnoreCase(keyword).or(menu.name.containsIgnoreCase(keyword));
     }
 
 }
