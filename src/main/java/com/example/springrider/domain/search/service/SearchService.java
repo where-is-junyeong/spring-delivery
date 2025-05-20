@@ -1,9 +1,12 @@
 package com.example.springrider.domain.search.service;
 
+import com.example.springrider.domain.search.dto.response.TrendingKeywordResponseDto;
 import com.example.springrider.domain.search.entity.Search;
 import com.example.springrider.domain.search.repository.SearchRepository;
 import com.example.springrider.domain.store.dto.response.FindAllStoreResponseDto;
+import com.example.springrider.domain.store.repository.StoreQueryRepository;
 import com.example.springrider.domain.store.repository.StoreRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +32,10 @@ public class SearchService {
         searchRepository.save(search);
 
         return storeRepository.search(keyword, pageable);
+    }
+
+    public List<TrendingKeywordResponseDto> trending(Long rank){
+        return searchRepository.trendingKeyword(rank);
     }
 
 }

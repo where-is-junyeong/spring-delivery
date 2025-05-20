@@ -1,9 +1,11 @@
 package com.example.springrider.domain.search.controller;
 
+import com.example.springrider.domain.search.dto.response.TrendingKeywordResponseDto;
 import com.example.springrider.domain.search.service.SearchService;
 import com.example.springrider.domain.store.dto.response.FindAllStoreResponseDto;
 import com.example.springrider.global.response.ApiResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,6 +36,12 @@ public class SearchController {
         return ApiResponse.ok(response);
     }
 
+    @GetMapping("/trending")
+    public ApiResponse<List<TrendingKeywordResponseDto>> trending(
+        @RequestParam(defaultValue = "10") Long rank
+    ){
+        return ApiResponse.ok(searchService.trending(rank));
+    }
 
     private Pageable initPageable(int page, int size){
         return PageRequest.of(page - 1, size);
