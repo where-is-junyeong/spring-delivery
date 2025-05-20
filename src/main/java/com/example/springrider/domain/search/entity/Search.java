@@ -38,14 +38,6 @@ public class Search {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
-    public static Search of(String keyword){
-//        return new Search(keyword);
-        return Search.builder()
-            .keyword(keyword)
-            .createdAt(LocalDateTime.now())
-            .build();
-    }
-
     public static Search of(String keyword, Long count) {
 //        return new Search(keyword, count);
         return Search.builder()
@@ -53,5 +45,12 @@ public class Search {
             .count(count)
             .createdAt(LocalDateTime.now())
             .build();
+    }
+
+    public void count() {
+        if (this.count == null) {
+            this.count = 0L;
+        }
+        this.count++;
     }
 }
