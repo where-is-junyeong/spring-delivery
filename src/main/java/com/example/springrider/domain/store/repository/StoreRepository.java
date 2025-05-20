@@ -8,7 +8,7 @@ import com.example.springrider.domain.user.entity.User;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface StoreRepository extends JpaRepository<Store, Long> {
+public interface StoreRepository extends JpaRepository<Store, Long>, StoreQueryRepository {
 
     long countByUser(User user); // 사장님이 등록한 가게 개수
 

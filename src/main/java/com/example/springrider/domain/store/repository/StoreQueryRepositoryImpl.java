@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class StoreQueryRepositoryImpl {
+public class StoreQueryRepositoryImpl implements StoreQueryRepository{
 
     private final JPAQueryFactory queryFactory;
     private final QStore store = QStore.store;

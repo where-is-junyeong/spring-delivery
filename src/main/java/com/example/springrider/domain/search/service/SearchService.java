@@ -17,11 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SearchService {
 
-    private final StoreQueryRepositoryImpl storeQueryRepository;
+    private final StoreRepository storeRepository;
 
     @Transactional(readOnly = true)
     public Page<FindAllStoreResponseDto> search(String keyword, Pageable pageable){
-        return storeQueryRepository.search(keyword, pageable);
+        return storeRepository.search(keyword, pageable);
     }
 
 }
