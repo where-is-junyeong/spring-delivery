@@ -14,7 +14,10 @@ public class SearchCacheService {
 
     private final StoreRepository storeRepository;
 
-    @Cacheable(value = "searchResults", key = "#keyword + '_' +  #pageable.pageNumber")
+    @Cacheable(
+        value = "searchResults",
+        key = "#keyword + '_' +  #pageable.pageNumber + '_' + #pageable.pageSize"
+    )
     public Page<FindAllStoreResponseDto> getSearchResultsWithCache(String keyword, Pageable pageable){
         return storeRepository.search(keyword, pageable);
     }
