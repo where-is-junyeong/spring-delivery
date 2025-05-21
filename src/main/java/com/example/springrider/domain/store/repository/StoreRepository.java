@@ -5,8 +5,15 @@ import com.example.springrider.global.exception.InvalidRequestException;
 import com.example.springrider.domain.store.entity.Store;
 import com.example.springrider.domain.store.enums.StoreStatus;
 import com.example.springrider.domain.user.entity.User;
+
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
 
@@ -20,4 +27,20 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
         return findById(storeId)
             .orElseThrow(() -> new InvalidRequestException(ExceptionCode.STORE_NOT_FOUND));
     }
+
+    @EntityGraph(attributePaths = {"menus"})
+    @Query("select distinct s " +
+            "from Store s " +
+            "left join s.menus m " +
+            "where s.name like %:keyword% " +
+            "or m.name like %:keyword%")
+    Page<Store> SearchPageByKeyword(@Param("keyword")String keyword, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"menus"})
+    @Query("select distinct s " +
+            "from Store s " +
+            "left join s.menus m " +
+            "where s.name like %:keyword% " +
+            "or m.name like %:keyword%")
+    List<Store> SearchByKeyword(String keyword);
 }
