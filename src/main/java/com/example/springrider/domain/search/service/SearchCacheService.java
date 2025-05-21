@@ -22,14 +22,19 @@ public class SearchCacheService {
     @Transactional(readOnly = true)
     @Cacheable(
         value = "searchResults",
-        key = "#keyword + '_' +  #pageable.pageNumber + '_' + #pageable.pageSize"
+        key = "#keyword + '_' +  #pageable.pageNumber + '_' + #pageable.pageSize",
+        unless = "#result.content.empty"
     )
     public Page<FindAllStoreResponseDto> getSearchResultsWithCache(String keyword, Pageable pageable){
         return storeRepository.search(keyword, pageable);
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "trendingKeywords", key = "#rank")
+    @Cacheable(
+        value = "trendingKeywords",
+        key = "#rank",
+        unless = "#result.empty"
+    )
     public List<TrendingKeywordResponseDto> getTrendingKeywordsWithCache(Long rank){
         return searchRepository.trendingKeyword(rank);
     }

@@ -22,19 +22,13 @@ public class SearchService {
     private final SearchCacheService searchCacheService;
 
     public Page<FindAllStoreResponseDto> searchV1(String keyword, Pageable pageable) {
-        // search 테이블은 검색 이력 테이블이 아닌 누적 카운트 테이블로 구현
-        Search search = searchRepository.findByKeyword(keyword)
-            // keyword 가 존재하면 count += 1 한 객체 반환
-            .map(s -> {
-                s.increaseCount(); // search.count++
-                return s;
-            })
-            // keyword 가 존재하지 않으면 count = 1인 새 객체 생성
-            .orElseGet(() -> Search.of(keyword, 1L));
+        Page<FindAllStoreResponseDto> searchResults = storeRepository.search(keyword, pageable);
 
-        searchRepository.save(search);
+        if(!searchResults.isEmpty()){
+            increaseCount(keyword);
+        }
 
-        return storeRepository.search(keyword, pageable);
+        return searchResults;
     }
 
     public List<TrendingKeywordResponseDto> trendingV1(Long rank){
@@ -43,8 +37,14 @@ public class SearchService {
 
     @Transactional
     public Page<FindAllStoreResponseDto> searchV2(String keyword, Pageable pageable) {
-        increaseCount(keyword);
-        return searchCacheService.getSearchResultsWithCache(keyword, pageable);
+        Page<FindAllStoreResponseDto> searchResults = searchCacheService.getSearchResultsWithCache(
+            keyword, pageable);
+
+        if(!searchResults.isEmpty()){
+            increaseCount(keyword);
+        }
+
+        return searchResults;
     }
 
     public void increaseCount(String keyword){
