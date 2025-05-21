@@ -4,7 +4,6 @@ import com.example.springrider.domain.search.dto.response.TrendingKeywordRespons
 import com.example.springrider.domain.search.entity.Search;
 import com.example.springrider.domain.search.repository.SearchRepository;
 import com.example.springrider.domain.store.dto.response.FindAllStoreResponseDto;
-import com.example.springrider.domain.store.repository.StoreQueryRepository;
 import com.example.springrider.domain.store.repository.StoreRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +35,10 @@ public class SearchService {
         return storeRepository.search(keyword, pageable);
     }
 
+    public List<TrendingKeywordResponseDto> trendingV1(Long rank){
+        return searchRepository.trendingKeyword(rank);
+    }
+
     @Cacheable(value = "searchResults", key = "#keyword")
     public Page<FindAllStoreResponseDto> searchV2(String keyword, Pageable pageable) {
         // search 테이블은 검색 이력 테이블이 아닌 누적 카운트 테이블로 구현
@@ -52,10 +54,6 @@ public class SearchService {
         searchRepository.save(search);
 
         return storeRepository.search(keyword, pageable);
-    }
-
-    public List<TrendingKeywordResponseDto> trendingV1(Long rank){
-        return searchRepository.trendingKeyword(rank);
     }
 
     @Cacheable(value = "trendingKeywords", key = "#rank")
