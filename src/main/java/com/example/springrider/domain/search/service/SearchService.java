@@ -61,9 +61,8 @@ public class SearchService {
         searchRepository.save(search);
     }
 
-    @Cacheable(value = "trendingKeywords", key = "#rank")
     public List<TrendingKeywordResponseDto> trendingV2(Long rank){
-        return searchRepository.trendingKeyword(rank);
+        return searchCacheService.getTrendingKeywordsWithCache(rank);
     }
 
 }
