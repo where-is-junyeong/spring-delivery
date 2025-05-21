@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class SearchService {
 
     private final StoreRepository storeRepository;
     private final SearchRepository searchRepository;
+    private final SearchCacheService searchCacheService;
 
     public Page<FindAllStoreResponseDto> searchV1(String keyword, Pageable pageable) {
         // search 테이블은 검색 이력 테이블이 아닌 누적 카운트 테이블로 구현
@@ -39,8 +41,13 @@ public class SearchService {
         return searchRepository.trendingKeyword(rank);
     }
 
-    @Cacheable(value = "searchResults", key = "#keyword")
+    @Transactional
     public Page<FindAllStoreResponseDto> searchV2(String keyword, Pageable pageable) {
+        increaseCount(keyword);
+        return searchCacheService.getSearchResultsWithCache(keyword, pageable);
+    }
+
+    public void increaseCount(String keyword){
         // search 테이블은 검색 이력 테이블이 아닌 누적 카운트 테이블로 구현
         Search search = searchRepository.findByKeyword(keyword)
             // keyword 가 존재하면 count += 1 한 객체 반환
@@ -52,8 +59,6 @@ public class SearchService {
             .orElseGet(() -> Search.of(keyword, 1L));
 
         searchRepository.save(search);
-
-        return storeRepository.search(keyword, pageable);
     }
 
     @Cacheable(value = "trendingKeywords", key = "#rank")
