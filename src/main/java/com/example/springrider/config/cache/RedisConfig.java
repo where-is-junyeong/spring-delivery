@@ -1,4 +1,4 @@
-package com.example.springrider.config;
+package com.example.springrider.config.cache;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
