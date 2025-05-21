@@ -41,6 +41,7 @@ public class Search {
     public Search(String keyword, Long count) {
         this.keyword = keyword;
         this.count = count;
+        this.createdAt = LocalDateTime.now();
     }
 
     public static Search of(String keyword, Long count) {
