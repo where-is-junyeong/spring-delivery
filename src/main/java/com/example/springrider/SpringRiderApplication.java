@@ -3,6 +3,7 @@ package com.example.springrider;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode;
@@ -12,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableSpringDataWebSupport(pageSerializationMode = PageSerializationMode.VIA_DTO)
 @EnableJpaAuditing
 @EnableScheduling
+@EnableCaching
 public class SpringRiderApplication {
 
     public static void main(String[] args) {
@@ -24,7 +26,7 @@ public class SpringRiderApplication {
         System.setProperty("DB_PASSWORD", dotenv.get("DB_PASSWORD"));
         System.setProperty("spring.profiles.default", "dev");
 //        System.setProperty("spring.profiles.default", "prod");
-        System.setProperty("JWT_KEY",dotenv.get("JWT_KEY"));
+
 
         SpringApplication.run(SpringRiderApplication.class, args);
     }

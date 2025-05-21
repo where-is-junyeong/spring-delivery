@@ -1,5 +1,6 @@
 package com.example.springrider.domain.search.controller;
 
+import com.example.springrider.config.redis.PageResponse;
 import com.example.springrider.domain.search.dto.response.SearchResponseDto;
 import com.example.springrider.domain.search.dto.response.SearchTrendingResponseDto;
 import com.example.springrider.domain.search.service.SearchLogService;
@@ -32,7 +33,7 @@ public class SearchController {
 
     // 검색 API - v2 (캐시 적용)
     @GetMapping("api/search/v2")
-    public ApiResponse<Page<SearchResponseDto>> searchV2(
+    public ApiResponse<PageResponse<SearchResponseDto>> searchV2(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -51,7 +52,7 @@ public class SearchController {
 
     // 인기 검색어 API - v2 (캐시 적용) - 실시간
     @GetMapping("api/search/trending/v2")
-    public ApiResponse<Page<SearchTrendingResponseDto>> trendingV2(
+    public ApiResponse<PageResponse<SearchTrendingResponseDto>> trendingV2(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);

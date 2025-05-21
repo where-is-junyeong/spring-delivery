@@ -11,6 +11,9 @@ import com.example.springrider.domain.user.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -167,6 +170,9 @@ public class InitService {
         menuRepository.save(menu7);
         menuRepository.save(menu8);
         menuRepository.save(menu9);
+
+
+
 
         log.info("초기 데이터 생성 완료");
     }

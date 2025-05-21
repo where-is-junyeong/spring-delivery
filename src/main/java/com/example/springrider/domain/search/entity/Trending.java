@@ -16,7 +16,7 @@ public class Trending {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    //관리대상 인기검색어
     private String keyword;
 
     private Long counter;

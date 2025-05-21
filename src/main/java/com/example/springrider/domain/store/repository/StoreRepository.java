@@ -26,8 +26,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
         return findById(storeId)
             .orElseThrow(() -> new InvalidRequestException(ExceptionCode.STORE_NOT_FOUND));
     }
-
-
+    //수정 필요
     @EntityGraph(attributePaths = "menus")
     @Query("SELECT s FROM Store s WHERE s.name LIKE %:keyword% OR EXISTS (SELECT m FROM Menu m WHERE m.store = s AND m.name LIKE %:keyword%)")
     Page<Store> findByKeyword(@Param("keyword") String keyword, Pageable pageable);

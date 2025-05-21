@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 //검색 기록이 아닌 검색한 결과의 기록
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
