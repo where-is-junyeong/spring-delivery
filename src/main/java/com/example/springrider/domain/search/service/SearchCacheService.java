@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class SearchCacheService {
     private final StoreRepository storeRepository;
     private final SearchRepository searchRepository;
 
+    @Transactional(readOnly = true)
     @Cacheable(
         value = "searchResults",
         key = "#keyword + '_' +  #pageable.pageNumber + '_' + #pageable.pageSize"
@@ -26,6 +28,7 @@ public class SearchCacheService {
         return storeRepository.search(keyword, pageable);
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(value = "trendingKeywords", key = "#rank")
     public List<TrendingKeywordResponseDto> getTrendingKeywordsWithCache(Long rank){
         return searchRepository.trendingKeyword(rank);
