@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TrendingKeywordResponseDto {
 
-    private Long rank;
+    private Long count;
     private String keyword;
 }
