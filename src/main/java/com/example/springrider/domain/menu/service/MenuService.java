@@ -29,7 +29,7 @@ public class MenuService {
     public MenuResponseDto create(User user, Long storeId, MenuRequestDto requestDto) {
         Store findStore = storeRepository.findByIdOrElseThrow(storeId);
         Menu menu = new Menu(requestDto);
-        menu.setStore(findStore);
+        menu.updateStore(findStore);
 
         // 메뉴 저장
         menuRepository.save(menu);

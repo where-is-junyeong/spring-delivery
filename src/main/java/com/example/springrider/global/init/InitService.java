@@ -37,15 +37,16 @@ public class InitService {
         log.info("초기 데이터 생성 시작");
 
         // 테스트용 사장 생성
-        User user = User.builder()
-            .email("test@example.com")
-            .password(passwordEncoder.encode("password1!"))
-            .nickname("테스트계정")
-            .role(UserRole.OWNER)
-            .isWithdraw(false)
-            .build();
-
-        userRepository.save(user);
+//        User user = User.builder()
+//            .email("test@example.com")
+//            .password(passwordEncoder.encode("password1!"))
+//            .nickname("테스트계정")
+//            .role(UserRole.OWNER)
+//            .isWithdraw(false)
+//            .build();
+//
+//        userRepository.save(user);
+        User user=userRepository.findByIdOrElseThrow(1L);
 
         // 테스트용 가게 생성
         Store store1 = Store.builder()

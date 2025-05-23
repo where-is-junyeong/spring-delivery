@@ -40,7 +40,7 @@ public class Menu extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
-    @Setter
+
     private Store store;
 
     // 메뉴 이름, 가격, 설명 생성자
@@ -63,4 +63,7 @@ public class Menu extends BaseEntity {
         this.isDeleted = true;
     }
 
+    public void updateStore(Store store){
+        this.store=store;
+    }
 }

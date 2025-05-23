@@ -22,6 +22,10 @@ import jakarta.persistence.Table;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -68,14 +72,15 @@ public class Store extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<Menu> menus = new ArrayList<>();
 
-    public Store(String name, String address, String category, LocalTime openTime,
+    public Store(String name, String address, String category, String description,LocalTime openTime,
         LocalTime closeTime, Integer minOrderPrice, StoreStatus status, User user) {
         this.name = name;
         this.address = address;
         this.category = category;
+        this.description=description;
         this.openTime = openTime;
         this.closeTime = closeTime;
         this.minOrderPrice = minOrderPrice;
@@ -83,11 +88,13 @@ public class Store extends BaseEntity {
         this.user = user;
     }
 
+
     public static Store StoreInfo(StoreRequestDto storeRequestDto, User user) {
         return new Store(
             storeRequestDto.getName(),
             storeRequestDto.getAddress(),
             storeRequestDto.getCategory(),
+            storeRequestDto.getDescription(),
             storeRequestDto.getOpenTime(),
             storeRequestDto.getCloseTime(),
             storeRequestDto.getMinOrderPrice(),

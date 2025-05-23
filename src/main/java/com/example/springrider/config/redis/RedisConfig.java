@@ -69,34 +69,34 @@ public class RedisConfig {
         return template;
     }
 
-    @Bean
-    public RedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.activateDefaultTyping(
-                BasicPolymorphicTypeValidator.builder().allowIfSubType(Object.class).build(),
-                ObjectMapper.DefaultTyping.NON_FINAL,
-                JsonTypeInfo.As.PROPERTY
-        );
-
-        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
-
-        // 기본 설정
-        RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(5))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
-
-        // 캐시별 개별 설정
-        Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
-        cacheConfigs.put("searchCache", defaultConfig.entryTtl(Duration.ofMinutes(5)));
-        cacheConfigs.put("searchCacheLog", defaultConfig.entryTtl(Duration.ofMinutes(1)));
-
-
-        return RedisCacheManager.builder(redisConnectionFactory)
-                .cacheDefaults(defaultConfig)
-                .withInitialCacheConfigurations(cacheConfigs)
-                .build();
-    }
+//    @Bean
+//    public RedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        objectMapper.registerModule(new JavaTimeModule());
+//        objectMapper.activateDefaultTyping(
+//                BasicPolymorphicTypeValidator.builder().allowIfSubType(Object.class).build(),
+//                ObjectMapper.DefaultTyping.NON_FINAL,
+//                JsonTypeInfo.As.PROPERTY
+//        );
+//
+//        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
+//
+//        // 기본 설정
+//        RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
+//                .entryTtl(Duration.ofMinutes(5))
+//                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
+//
+//        // 캐시별 개별 설정
+//        Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
+//        cacheConfigs.put("searchCache", defaultConfig.entryTtl(Duration.ofMinutes(5)));
+//        cacheConfigs.put("searchCacheLog", defaultConfig.entryTtl(Duration.ofMinutes(5)));
+//
+//
+//        return RedisCacheManager.builder(redisConnectionFactory)
+//                .cacheDefaults(defaultConfig)
+//                .withInitialCacheConfigurations(cacheConfigs)
+//                .build();
+//    }
 
 
 }

@@ -4,6 +4,7 @@ import static com.example.springrider.global.exception.ExceptionCode.STORE_INVAL
 import static com.example.springrider.global.exception.ExceptionCode.STORE_INVALID_TIME;
 import static com.example.springrider.global.exception.ExceptionCode.STORE_USER_MISMATCH;
 
+import com.example.springrider.config.cache.CacheStrategy;
 import com.example.springrider.domain.store.dto.request.StoreRequestDto;
 import com.example.springrider.domain.store.dto.request.UpdateStoreRequestDto;
 import com.example.springrider.domain.store.dto.response.StoreResponseDto;
@@ -13,6 +14,7 @@ import com.example.springrider.domain.store.repository.StoreRepository;
 import com.example.springrider.domain.user.entity.User;
 import com.example.springrider.global.exception.InvalidRequestException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OwnerStoreService {
 
     private final StoreRepository storeRepository;
+    private final CacheStrategy cacheStrategy;
     /**
      * 가게 생성
      *
@@ -49,6 +52,7 @@ public class OwnerStoreService {
      * @param user    유저 고유 식별자
      * @return 수정된 가게 정보
      */
+
     @Transactional
     public StoreResponseDto update(
         Long storeId, UpdateStoreRequestDto requestDto, User user) {
@@ -81,8 +85,14 @@ public class OwnerStoreService {
             throw new InvalidRequestException(STORE_INVALID_TIME);
         }
 
+        boolean isNameChanged = !requestDto.getName().isEmpty() && !requestDto.getName().equals(store.getName());
+
         // 가게 정보 수정
         store.update(requestDto);
+
+        if (isNameChanged){
+            cacheStrategy.evictAllSearchCache();
+        }
 
         return StoreResponseDto.of(store);
     }

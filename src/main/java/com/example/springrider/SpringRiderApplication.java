@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
@@ -24,7 +25,8 @@ public class SpringRiderApplication {
         System.setProperty("DB_URL", dotenv.get("DB_URL"));
         System.setProperty("DB_USERNAME", dotenv.get("DB_USERNAME"));
         System.setProperty("DB_PASSWORD", dotenv.get("DB_PASSWORD"));
-        System.setProperty("spring.profiles.default", "dev");
+        System.setProperty("spring.profiles.default", "nGrinder");
+//        System.setProperty("spring.profiles.default", "dev");
 //        System.setProperty("spring.profiles.default", "prod");
 
 

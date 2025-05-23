@@ -25,7 +25,7 @@ public class JwtFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // 필요 없다면 생략 가능
+        // 생략 가능
     }
 
     @Override
@@ -37,22 +37,24 @@ public class JwtFilter implements Filter {
 
         String bearerJwt = httpRequest.getHeader("Authorization");
 
-        // JWT가 있는 경우만 검증 로직 실행
         if (bearerJwt != null && bearerJwt.startsWith("Bearer ")) {
             String jwt = jwtUtil.substringToken(bearerJwt);
             try {
                 Claims claims = jwtUtil.extractClaims(jwt);
 
                 if (claims != null) {
-                    //jwt를 사용
                     String email = claims.get("email", String.class);
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-                    UsernamePasswordAuthenticationToken auth =
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails, null, userDetails.getAuthorities());
+                    // 인증 객체가 없는 경우에만 loadUserByUsername 호출
+                    if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-                    SecurityContextHolder.getContext().setAuthentication(auth);
+                        UsernamePasswordAuthenticationToken auth =
+                                new UsernamePasswordAuthenticationToken(
+                                        userDetails, null, userDetails.getAuthorities());
+
+                        SecurityContextHolder.getContext().setAuthentication(auth);
+                    }
                 }
 
             } catch (SecurityException | MalformedJwtException e) {
@@ -74,12 +76,11 @@ public class JwtFilter implements Filter {
             }
         }
 
-        // 토큰이 없거나 인증하지 않아도 필터 체인 진행
         chain.doFilter(request, response);
     }
 
     @Override
     public void destroy() {
-        // 필요 없다면 생략 가능
+        // 생략 가능
     }
 }

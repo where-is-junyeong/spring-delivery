@@ -29,6 +29,13 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     //수정 필요
     @EntityGraph(attributePaths = "menus")
     @Query("SELECT s FROM Store s WHERE s.name LIKE %:keyword% OR EXISTS (SELECT m FROM Menu m WHERE m.store = s AND m.name LIKE %:keyword%)")
-    Page<Store> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+    Page<Store> searchByKeywordPaged(@Param("keyword") String keyword, Pageable pageable);
 
+
+    @EntityGraph(attributePaths = "menus")
+    @Query("SELECT s FROM Store s WHERE s.name LIKE %:keyword% OR EXISTS (SELECT m FROM Menu m WHERE m.store = s AND m.name LIKE %:keyword%)")
+    List<Store> searchByKeywordAll(@Param("keyword") String keyword, Pageable pageable);
+
+
+    List<Store> findByIdIn(List<Long> storeIds);
 }

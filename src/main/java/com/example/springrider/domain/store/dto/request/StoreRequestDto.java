@@ -38,6 +38,5 @@ public class StoreRequestDto {
 
     private StoreStatus status = StoreStatus.ACTIVE;
 
-    private Long userId;
 
 }
