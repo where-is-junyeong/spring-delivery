@@ -1,22 +1,25 @@
 package com.example.springrider.domain.search.dto.Response;
 
 import com.example.springrider.domain.store.entity.Store;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalTime;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class SearchResultResponseDto {
 
-    private final Long id;
-    private final String name;
-    private final String address;
-    private final String category;
-    private final Integer minOrderPrice;
-    private final LocalTime openTime;
-    private final LocalTime closeTime;
+    private Long id;
+    private String name;
+    private String address;
+    private String category;
+    private Integer minOrderPrice;
+    private LocalTime openTime;
+    private LocalTime closeTime;
 
     public static SearchResultResponseDto from(Store store){
         return new SearchResultResponseDto(

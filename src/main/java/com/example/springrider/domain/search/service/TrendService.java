@@ -9,16 +9,17 @@ import com.example.springrider.domain.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,11 +29,13 @@ public class TrendService {
     private final StoreRepository storeRepository;
     private final SearchRepository searchRepository;
     private final CacheManager cacheManager;
+    private final StringRedisTemplate stringRedisTemplate;
+    private static final String KEYWORD_COUNT = "keywordCount";
 
 
     // 검색 결과 호출 v2
     @Cacheable(value = "searchKeyword", key = "#keyword", unless = "#result.isEmpty()")
-    public List<SearchResultResponseDto> getCachedSearchResults(String keyword) {
+    public List<SearchResultResponseDto> searchV2(String keyword) {
 
         List<Store> stores = storeRepository.SearchByKeyword(keyword);
         return stores.stream()
@@ -51,7 +54,7 @@ public class TrendService {
         }
     }
 
-    //검색 횟수 증가 v2 (캐시 사용)
+//    검색 횟수 증가 v2 (캐시 사용)
     @CachePut(value = "keywordCount", key = "#keyword")
     public Long increaseKeywordCountV2(String keyword) {
         Cache cache = cacheManager.getCache("keywordCount");
@@ -63,6 +66,12 @@ public class TrendService {
         return count + 1;
     }
 
+//    // 검색 횟수 증가 V2 (redis 적용)
+//    public void increaseKeywordCountV2(String keyword) {
+//        if (keyword == null || keyword.isBlank()) return;
+//        stringRedisTemplate.opsForZSet().incrementScore(KEYWORD_COUNT, keyword, 1);
+//    }
+
     //인기 검색어 조회 v1
     public List<TrendingResponseDto> trend(){
 
@@ -73,17 +82,44 @@ public class TrendService {
                 .collect(Collectors.toList());
     }
 
-    //인기 검색어 조회 v2
-    public List<TrendingResponseDto> trendV2(){
+    //인기 검색어 조회 v2 (실시간)
+    public List<TrendingResponseDto> trendV2() {
+        Cache cache = cacheManager.getCache("keywordCount");
+        if (!(cache instanceof CaffeineCache caffeineCache)) {
+            throw new IllegalStateException("");
+        }
 
-        LocalDateTime time = LocalDateTime.now().minusHours(1);
-        List<Keyword> trend = searchRepository.findTrendByOrderByCount(time);
-        return trend.stream().map(TrendingResponseDto::from).toList();
+        Map<Object, Object> map = caffeineCache.getNativeCache().asMap();
 
+        return map.entrySet().stream()
+                .filter(entry -> entry.getKey() instanceof String && entry.getValue() instanceof Long)
+                .map(entry -> new TrendingResponseDto((String) entry.getKey(), (Long) entry.getValue()))
+                .sorted(Comparator.comparingLong(TrendingResponseDto::getCount).reversed())
+                .limit(10)
+                .toList();
     }
 
-    // 캐시 백업
+//    //인기 검색어 조회
+//    public List<TrendingResponseDto> trendV3(){
+//        Set<ZSetOperations.TypedTuple<String>> resultSet =
+//                stringRedisTemplate.opsForZSet()
+//                        .reverseRangeWithScores(KEYWORD_COUNT, 0, 9);
+//
+//        if (resultSet == null) return Collections.emptyList();
+//
+//        return resultSet.stream()
+//                .map(tuple -> TrendingResponseDto.of(
+//                        tuple.getValue(),
+//                        tuple.getScore().longValue()
+//                        )
+//                )
+//                .collect(Collectors.toList());
+//    }
+
+
+    // 캐시 db에 백업
     @Transactional
+    @CacheEvict(value = "keywordCount", allEntries = true)
     public void saveTrend(){
 
         Cache cache = cacheManager.getCache("keywordCount");
@@ -98,7 +134,5 @@ public class TrendService {
             // 새로운 Keyword 객체 저장
             searchRepository.save(new Keyword(keyword, count));
         }
-        // 캐시 초기화
-        caffeineCache.clear();
     }
 }

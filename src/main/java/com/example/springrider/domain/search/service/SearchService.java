@@ -1,7 +1,6 @@
 package com.example.springrider.domain.search.service;
 
 import com.example.springrider.domain.search.dto.Response.SearchResultResponseDto;
-import com.example.springrider.domain.search.repository.SearchRepository;
 import com.example.springrider.domain.store.entity.Store;
 import com.example.springrider.domain.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,13 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class SearchService {
 
-    private final SearchRepository searchRepository;
     private final StoreRepository storeRepository;
     private final TrendService trendService;
 
@@ -41,7 +38,7 @@ public class SearchService {
         //검색 횟수 증가
         trendService.increaseKeywordCountV2(keyword);
         //검색 결과 호출 list -> page
-        List<SearchResultResponseDto> resultList = trendService.getCachedSearchResults(keyword);
+        List<SearchResultResponseDto> resultList = trendService.searchV2(keyword);
         int start = (page - 1) * size;
         int end = Math.min(start + size, resultList.size());
         List<SearchResultResponseDto> pageContent =

@@ -60,4 +60,5 @@ public class SearchController {
         List<TrendingResponseDto> response = trendService.trendV2();
         return ApiResponse.ok(response);
     }
+
 }
