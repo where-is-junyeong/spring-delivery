@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class SearchController {
@@ -43,19 +45,13 @@ public class SearchController {
 
     // 인기 검색어 API - v1 (캐시 미적용) - 시간에 따른 데이터
     @GetMapping("api/search/trending/v1")
-    public ApiResponse<Page<SearchTrendingResponseDto>> trendingV1(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.ok(searchLogService.findV1(pageable));
+    public ApiResponse<List<SearchTrendingResponseDto>> trendingV1() {
+        return ApiResponse.ok(searchLogService.findV1());
     }
 
     // 인기 검색어 API - v2 (캐시 적용) - 실시간
     @GetMapping("api/search/trending/v2")
-    public ApiResponse<PageResponse<SearchTrendingResponseDto>> trendingV2(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.ok(searchLogService.findV2(pageable));
+    public ApiResponse<List<SearchTrendingResponseDto>> trendingV2() {
+        return ApiResponse.ok(searchLogService.findV2());
     }
 }

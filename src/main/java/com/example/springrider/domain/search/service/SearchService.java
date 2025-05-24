@@ -6,16 +6,12 @@ import com.example.springrider.domain.search.dto.response.SearchResponseDto;
 import com.example.springrider.domain.store.entity.Store;
 import com.example.springrider.domain.store.repository.StoreRepository;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
-import org.springframework.data.redis.core.DefaultTypedTuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -83,7 +79,7 @@ public class SearchService {
     private Page<SearchResponseDto> handleCacheMiss(String keyword, Pageable pageable) {
 
         Page<Store> storePage = storeRepository.searchByKeywordPaged(keyword, pageable);
-        List<Store> allStores = storeRepository.searchByKeywordAll(keyword,pageable); // 전체 ID 확보용
+        List<Store> allStores = storeRepository.searchByKeywordWithLimit(keyword, pageable.getOffset(), (long) pageable.getPageSize()); // 전체 ID 확보용
 
         if (!allStores.isEmpty()) {
             redisSearchUtil.updateIndex(keyword,allStores);

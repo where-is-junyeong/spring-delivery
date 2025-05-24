@@ -1,6 +1,5 @@
 package com.example.springrider.domain.search.service;
 
-import com.example.springrider.config.redis.PageResponse;
 import com.example.springrider.domain.search.dto.response.SearchTrendingResponseDto;
 import com.example.springrider.domain.search.entity.SearchLog;
 import com.example.springrider.domain.search.entity.Trending;
@@ -9,9 +8,7 @@ import com.example.springrider.domain.search.repository.TrendingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -49,17 +46,17 @@ public class SearchLogService {
     /**
      * 최근 1시간 기준 인기 검색어 (DB 기반)
      */
-    public Page<SearchTrendingResponseDto> findV1(Pageable pageable) {
+    @Cacheable(value = "searchCacheLog")
+    public List<SearchTrendingResponseDto> findV1() {
 
-        return trendingRepository.findTrending(pageable);
+        return trendingRepository.trendingKeyword(10L);
     }
 
     /**
      * 실시간 인기 검색어 조회 (Redis 기반, 캐시 적용)
      */
     @Transactional(readOnly = true)
-    @Cacheable(value = "searchCacheLog", key = "'trending:' + #pageable.pageNumber + ':' + #pageable.pageSize")
-    public PageResponse<SearchTrendingResponseDto> findV2(Pageable pageable) {
+    public List<SearchTrendingResponseDto> findV2() {
 
         Set<ZSetOperations.TypedTuple<String>> topKeywords = redisTemplate.opsForZSet()
                 .reverseRangeWithScores(REDIS_RANKING_KEY, 0, 9);
@@ -70,16 +67,13 @@ public class SearchLogService {
         if (topKeywords != null) {
             for (ZSetOperations.TypedTuple<String> tuple : topKeywords) {
                 rank++;
-                dtoList.add(new SearchTrendingResponseDto(rank, tuple.getValue(), tuple.getScore().longValue()));
+                dtoList.add(new SearchTrendingResponseDto(rank, tuple.getValue(), Objects.requireNonNull(tuple.getScore()).longValue()));
             }
         }
 
         // 수동 페이징 처리
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), dtoList.size());
-        List<SearchTrendingResponseDto> pageContent = dtoList.subList(start, end);
 
-        return PageResponse.from(new PageImpl<>(pageContent, pageable, dtoList.size()));
+        return dtoList;
     }
 
     /**
