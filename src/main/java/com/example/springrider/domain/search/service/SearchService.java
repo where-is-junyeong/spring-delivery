@@ -26,7 +26,7 @@ public class SearchService {
 
     private final StoreRepository storeRepository;
     private final SearchLogService searchLogService;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisSearchUtil redisSearchUtil;
     /**
      * 검색 API v1 - DB 조회, 캐시 미적용
      * 검색어가 상점명 또는 메뉴명에 포함된 경우 로그 저장 (즉시 DB 저장)
@@ -56,18 +56,17 @@ public class SearchService {
     @Cacheable(value = "searchCache", key = "#keyword + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public PageResponse<SearchResponseDto> findv2(String keyword, Pageable pageable) {
 
-        String redisKey = "search::" + keyword;
         long start = (long) pageable.getPageNumber() * pageable.getPageSize();
         long end = start + pageable.getPageSize() - 1;
 
-        Set<String> storeIdStrings = getStoreIdsFromRedis(redisKey, start, end);
+        List<Long> storeIds =redisSearchUtil.getStoreIds(keyword,start,end);
 
         // Redis 캐시 미스 시 로직 위임
-        if (storeIdStrings == null || storeIdStrings.isEmpty()) {
+        if (storeIds.isEmpty()) {
             return PageResponse.from(handleCacheMiss(keyword, pageable));
         }
+
         // Redis 캐시 히트 시 ID → DB 조회 → DTO 정렬
-        List<Long> storeIds = storeIdStrings.stream().map(Long::valueOf).toList();
         List<Store> stores = storeRepository.findByIdIn(storeIds);
         Map<Long, Store> storeMap = stores.stream().collect(Collectors.toMap(Store::getId, Function.identity()));
 
@@ -77,22 +76,17 @@ public class SearchService {
                 .map(SearchResponseDto::of)
                 .toList();
 
-        long totalElements = Optional.ofNullable(redisTemplate.opsForZSet().zCard(redisKey)).orElse((long) sortedDtos.size());
-
+        long totalElements = redisSearchUtil.getTotal(keyword);
         return PageResponse.from(new PageImpl<>(sortedDtos, pageable, totalElements));
     }
 
-    private Set<String> getStoreIdsFromRedis(String redisKey, long start, long end) {
-        return redisTemplate.opsForZSet().reverseRange(redisKey, start, end);
-    }
-
-    // no hit redis or redis's cache
     private Page<SearchResponseDto> handleCacheMiss(String keyword, Pageable pageable) {
-        Page<Store> storePage = storeRepository.searchByKeywordPaged(keyword, pageable);
 
+        Page<Store> storePage = storeRepository.searchByKeywordPaged(keyword, pageable);
         List<Store> allStores = storeRepository.searchByKeywordAll(keyword,pageable); // 전체 ID 확보용
+
         if (!allStores.isEmpty()) {
-            cacheStoreIds(keyword, allStores);
+            redisSearchUtil.updateIndex(keyword,allStores);
         }
 
         boolean matches = storePage.stream().anyMatch(store ->
@@ -104,20 +98,6 @@ public class SearchService {
         }
 
         return storePage.map(SearchResponseDto::of);
-    }
-
-    //redis에 정보 찾기
-    private void cacheStoreIds(String keyword, List<Store> stores) {
-        String redisKey = "search::" + keyword;
-        Set<TypedTuple<String>> zSetEntries = stores.stream()
-                .map(store -> new DefaultTypedTuple<>(
-                        store.getId().toString(),
-                        (double) System.currentTimeMillis()
-                ))
-                .collect(Collectors.toSet());
-
-        redisTemplate.opsForZSet().add(redisKey, zSetEntries);
-        redisTemplate.expire(redisKey, Duration.ofHours(1));
     }
 
 }

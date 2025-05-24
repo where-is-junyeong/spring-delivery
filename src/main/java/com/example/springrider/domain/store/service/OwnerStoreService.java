@@ -85,13 +85,15 @@ public class OwnerStoreService {
             throw new InvalidRequestException(STORE_INVALID_TIME);
         }
 
-        boolean isNameChanged = !requestDto.getName().isEmpty() && !requestDto.getName().equals(store.getName());
+        String oldName= store.getName();
+
+        boolean isNameChanged = !requestDto.getName().isEmpty() && !requestDto.getName().equals(oldName);
 
         // 가게 정보 수정
         store.update(requestDto);
 
         if (isNameChanged){
-            cacheStrategy.evictAllSearchCache();
+            cacheStrategy.evictSearchCacheByStore(oldName,store.getMenus());
         }
 
         return StoreResponseDto.of(store);
