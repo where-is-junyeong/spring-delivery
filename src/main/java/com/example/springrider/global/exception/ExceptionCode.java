@@ -63,7 +63,10 @@ public enum ExceptionCode {
 
     // 공통
     NOT_VALID_EXCEPTION("validation 예외 발생"),
-    INTERNAL_SERVER_ERROR("서버 에러 발생");
+    INTERNAL_SERVER_ERROR("서버 에러 발생"),
+    EXPIRED_JWT("JWT 기한 오류"),
+    INVALID_JWT("올바르지 않은 JWT");
+
 
     private final String message;
 }

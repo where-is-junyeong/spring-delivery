@@ -1,6 +1,7 @@
 package com.example.springrider.config.security;
 
 import com.example.springrider.config.jwt.JwtFilter;
+import com.example.springrider.config.jwt.JwtTokenProvider;
 import com.example.springrider.config.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,8 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Profile("!nGrinder") // 운영/개발 환경용: 인증 활성화
 public class SecurityConfig {
 
-    private final JwtUtil jwtUtil;
-    private final CustomUserDetailsService userDetailsService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -46,7 +46,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtFilter jwtFilter() {
-        return new JwtFilter(jwtUtil, userDetailsService);
+        return new JwtFilter(jwtTokenProvider);
     }
 
     @Bean

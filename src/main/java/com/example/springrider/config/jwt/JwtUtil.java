@@ -2,14 +2,13 @@ package com.example.springrider.config.jwt;
 
 import com.example.springrider.global.exception.ExceptionCode;
 import com.example.springrider.global.exception.ServerException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
 import java.util.Base64;
@@ -17,48 +16,59 @@ import java.util.Date;
 
 @Slf4j(topic = "JwtUtil")
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
 
-    private static final String BEARER_PREFIX = "Bearer ";
-
-    @Value("${jwt.token.exp}")
-    private long tokenTime;
-
     @Value("${jwt.secret.key}")
-    private String secretKey;
+    private String secretKeyEncoded;
+
+    @Value("${jwt.token.access-exp}")
+    private long accessTokenExpiry;
+
+    @Value("${jwt.token.refresh-exp}")
+    private long refreshTokenExpiry;
+
     private SecretKey key;
 
     @PostConstruct
     public void init() {
-        byte[] bytes = Base64.getDecoder().decode(secretKey);
-        key = Keys.hmacShaKeyFor(bytes);
-    }
-    // 유저 아이디랑 이메일만 담기
-    public String createToken(Long userId,String email) {
-        Date date = new Date();
-
-        return BEARER_PREFIX +
-                Jwts.builder()
-                        .subject(String.valueOf(userId)) // email로 변화 OK, 바뀔필요성 X
-                        .claim("email", email)
-                        .expiration(new Date(date.getTime() + tokenTime))
-                        .issuedAt(date) // 발급일
-                        .signWith(key) // 암호화 알고리즘
-                        .compact();
+        key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKeyEncoded));
     }
 
-    public String substringToken(String tokenValue) {
-        if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
-            return tokenValue.substring(7);
-        }
-        throw new ServerException(ExceptionCode.NOT_FOUND_JWT);
+    public String createToken(Long userId, String email, boolean isAccessToken) {
+        long expiry = isAccessToken ? accessTokenExpiry : refreshTokenExpiry;
+        String tokenType = isAccessToken ? "ACCESS" : "REFRESH";
+
+        return Jwts.builder()
+                .subject(String.valueOf(userId))
+                .claim("email", email)
+                .claim("type", tokenType)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expiry))
+                .signWith(key)
+                .compact();
     }
 
-    public Claims extractClaims(String token) {
+    public Claims getClaims(String token) {
         return Jwts.parser()
                 .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
+
+    public boolean isValid(String token) {
+        try {
+            getClaims(token);
+            return true;
+        } catch (ExpiredJwtException e) {
+            throw new ServerException(ExceptionCode.EXPIRED_JWT);
+        } catch (Exception e) {
+            throw new ServerException(ExceptionCode.INVALID_JWT);
+        }
+    }
+
+    public long getRefreshExpiry() {
+        return refreshTokenExpiry;
     }
 }

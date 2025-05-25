@@ -27,9 +27,9 @@ public class JwtUtilTest {
         String email = "test@asciod.exam";
 
         // when
-        String token = jwtUtil.createToken(userId, email);
-        Claims claims = jwtUtil.extractClaims(
-                jwtUtil.substringToken(token));
+        String token = jwtUtil.createToken(userId, email,true);
+        Claims claims = jwtUtil.getClaims(
+                jwtUtil.stripBearer(token));
 
         // then
         AssertionErrors.assertEquals("subject(UserId) 불일치", userId, Long.valueOf(claims.getSubject()));

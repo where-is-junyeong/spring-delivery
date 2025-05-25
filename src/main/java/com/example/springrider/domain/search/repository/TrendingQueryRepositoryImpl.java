@@ -21,7 +21,7 @@ public class TrendingQueryRepositoryImpl implements TrendingQueryRepository {
         return queryFactory
                 .select(Projections.constructor(
                         SearchTrendingResponseDto.class,
-                        trending.id,trending.counter,trending.keyword
+                        trending.id,trending.keyword,trending.counter
                 ))
                 .from(trending)
                 .orderBy(trending.counter.desc())

@@ -46,6 +46,7 @@ public class SearchLogService {
     /**
      * 최근 1시간 기준 인기 검색어 (DB 기반)
      */
+    @Transactional(readOnly = true)
     @Cacheable(value = "searchCacheLog")
     public List<SearchTrendingResponseDto> findV1() {
 
@@ -55,7 +56,7 @@ public class SearchLogService {
     /**
      * 실시간 인기 검색어 조회 (Redis 기반, 캐시 적용)
      */
-    @Transactional(readOnly = true)
+
     public List<SearchTrendingResponseDto> findV2() {
 
         Set<ZSetOperations.TypedTuple<String>> topKeywords = redisTemplate.opsForZSet()
