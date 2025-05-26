@@ -3,7 +3,9 @@ package com.example.springrider.domain.search.service;
 import com.example.springrider.config.redis.PageResponse;
 import com.example.springrider.domain.search.dto.response.SearchTrendingResponseDto;
 import com.example.springrider.domain.search.entity.SearchLog;
+import com.example.springrider.domain.search.entity.SearchLogBatch;
 import com.example.springrider.domain.search.entity.Trending;
+import com.example.springrider.domain.search.repository.SearchLogBatchRepository;
 import com.example.springrider.domain.search.repository.SearchLogRepository;
 import com.example.springrider.domain.search.repository.TrendingRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,9 @@ public class SearchLogService {
     private final TrendingRepository trendingRepository;
     private final RedisTemplate<String, String> redisTemplate;
     private static final String REDIS_RANKING_KEY = "search_rank";
+
+    private final SearchLogBatchRepository searchLogBatchRepository;
+
     /**
      * 즉시 DB에 검색 로그 저장 (트랜잭션 별도 분리)
      */
@@ -37,6 +42,16 @@ public class SearchLogService {
         SearchLog searchLog = new SearchLog(keyword);
         searchLogRepository.save(searchLog);
     }
+
+    /**
+     * 즉시 DB에 검색 로그 저장 (트랜잭션 별도 분리)
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void createForBatch(String keyword) {
+        SearchLog searchLog = new SearchLog(keyword);
+        searchLogRepository.save(searchLog);
+    }
+
     /**
      * Redis에 검색 로그 적재 (배치용)
      * ZSet에 점수 누적도 함께 처리

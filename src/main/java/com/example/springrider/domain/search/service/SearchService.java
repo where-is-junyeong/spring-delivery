@@ -26,6 +26,7 @@ public class SearchService {
 
     private final StoreRepository storeRepository;
     private final SearchLogService searchLogService;
+    private final SearchLogBatchService searchLogBatchService;
     private final RedisTemplate<String, String> redisTemplate;
     /**
      * 검색 API v1 - DB 조회, 캐시 미적용
@@ -80,6 +81,29 @@ public class SearchService {
         long totalElements = Optional.ofNullable(redisTemplate.opsForZSet().zCard(redisKey)).orElse((long) sortedDtos.size());
 
         return PageResponse.from(new PageImpl<>(sortedDtos, pageable, totalElements));
+    }
+
+    /**
+     * 검색 API v1 - DB 조회, 캐시 미적용, INSERT IGNORE 와 복합키를 통한 배치 사용
+     * 검색어가 상점명 또는 메뉴명에 포함된 경우 로그 저장 (즉시 DB 저장)
+     */
+    public Page<SearchResponseDto> findV1Batch(String keyword, Pageable pageable) {
+        Page<Store> storePage = storeRepository.searchByKeywordPaged(keyword, pageable);
+
+        storePage.forEach(store -> {
+            // 상점 이름에 키워드 포함 시 즉시 로그 저장
+            if (store.getName().contains(keyword)) {
+                searchLogBatchService.create(store.getName());
+            }
+
+            // 메뉴 중 키워드 포함된 경우 즉시 로그 저장
+            store.getMenus().stream()
+                    .map(Menu::getName)
+                    .filter(menuName -> menuName.contains(keyword))
+                    .forEach(searchLogBatchService::create);
+        });
+
+        return storePage.map(SearchResponseDto::of);
     }
 
     private Set<String> getStoreIdsFromRedis(String redisKey, long start, long end) {

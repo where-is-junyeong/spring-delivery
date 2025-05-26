@@ -3,6 +3,7 @@ package com.example.springrider.domain.search.controller;
 import com.example.springrider.config.redis.PageResponse;
 import com.example.springrider.domain.search.dto.response.SearchResponseDto;
 import com.example.springrider.domain.search.dto.response.SearchTrendingResponseDto;
+import com.example.springrider.domain.search.service.SearchLogBatchService;
 import com.example.springrider.domain.search.service.SearchLogService;
 import com.example.springrider.domain.search.service.SearchService;
 import com.example.springrider.global.response.ApiResponse;
@@ -29,6 +30,16 @@ public class SearchController {
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ApiResponse.ok(searchService.findv1(keyword, pageable));
+    }
+
+    // 검색 API - v1 복합키를 사용한 INSERT Batch 최적화
+    @GetMapping("api/search/v1-batch")
+    public ApiResponse<Page<SearchResponseDto>> searchV1Batch(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ApiResponse.ok(searchService.findV1Batch(keyword, pageable));
     }
 
     // 검색 API - v2 (캐시 적용)
