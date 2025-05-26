@@ -122,6 +122,8 @@ JWT_KEY=your_jwt_key
 `./src` 경로에 있는 `.env.example` 파일을 복사하고 `.env` 로 파일명을 수정한 뒤,<br/>
 `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_KEY` 값을 각자 환경에 맞도록 수정해야 합니다.
 
+<br/>
+
 # 📝 프로젝트 명세
 
 ## API 명세서
