@@ -31,6 +31,11 @@
 - 메뉴 생성 / 수정 / 삭제 기능
 - 메뉴는 가게 조회 시에만 함께 조회 가능
 
+4️⃣ 검색
+
+- 인기 검색어 조회 가능
+- 가게 검색 / 메뉴를 포함하는 가게 검색 기능
+
 <br/>
 
 Spring Boot와 JPA를 활용한 간단한 배달 앱의 백엔드 API를 구현한 프로젝트입니다.
@@ -110,10 +115,11 @@ src/main/java/com/example/springrider
 ```java
 DB_URL=jdbc:mysql://localhost:3306/SpringRider
 DB_USERNAME=your_username
-        DB_PASSWORD=your_password
+DB_PASSWORD=your_password
+JWT_KEY=your_jwt_key
 ```
 `./src` 경로에 있는 `.env.example` 파일을 복사하고 `.env` 로 파일명을 수정한 뒤,<br/>
-`DB_URL`, `DB_USERNAME`, `DB_PASSWORD` 값을 각자 환경에 맞도록 수정해야 합니다.
+`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_KEY` 값을 각자 환경에 맞도록 수정해야 합니다.
 
 
 <br/>
