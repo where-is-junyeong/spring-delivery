@@ -31,7 +31,6 @@
 - 메뉴 생성 / 수정 / 삭제 기능
 - 메뉴는 가게 조회 시에만 함께 조회 가능
 
-
 <br/>
 
 Spring Boot와 JPA를 활용한 간단한 배달 앱의 백엔드 API를 구현한 프로젝트입니다.
@@ -81,50 +80,23 @@ src/main/java/com/example/springrider
 ├── SpringRiderApplication.java
 ├── aop/
 ├── config/
+│   ├── cache/
 │   ├── jwt/
 │   ├── interceptor/
+│   ├── redis/
+│   ├── scheduler/
 │   └── security/
 ├── domain/
-│   ├── cart/
-│   │   ├── controller/
-│   │   ├── dto/
-│   │   │   ├── request/
-│   │   │   └── response/
-│   │   ├── entity/
-│   │   ├── enums/
-│   │   ├── repository/
-│   │   └── service/
 │   ├── common/
-│   │   └── entity/
 │   ├── menu/
-│   │   ├── controller/
-│   │   ├── dto
-│   │   │   ├── request/
-│   │   │   └── response/
-│   │   ├── entity/
-│   │   ├── repository/
-│   │   └── service/
-│   ├── store
-│   │   ├── controller/
-│   │   ├── dto/
-│   │   │   ├── request/
-│   │   │   └── response/
-│   │   ├── entity/
-│   │   ├── enums/
-│   │   ├── repository/
-│   │   └── service/
+│   ├── store/
+│   ├── search/
+│   ├── test/
 │   └── user/
-│       ├── controller/
-│       ├── dto
-│       │   ├── request/
-│       │   └── response/
-│       ├── entity/
-│       ├── enums/
-│       ├── repository/
-│       └── service/
 └── global/
     ├── exception/
     ├── handler/
+    ├── init/
     ├── response/
     ├── security/
     └── validation/
