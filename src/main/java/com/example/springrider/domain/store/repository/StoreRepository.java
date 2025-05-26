@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface StoreRepository extends JpaRepository<Store, Long>,StoreRepositoryCustom {
+public interface StoreRepository extends JpaRepository<Store, Long>{
 
     long countByUser(User user); // 사장님이 등록한 가게 개수
 
@@ -27,15 +27,29 @@ public interface StoreRepository extends JpaRepository<Store, Long>,StoreReposit
             .orElseThrow(() -> new InvalidRequestException(ExceptionCode.STORE_NOT_FOUND));
     }
     //수정 필요
-    @EntityGraph(attributePaths = "menus")
-    @Query("SELECT s FROM Store s WHERE s.name LIKE %:keyword% OR EXISTS (SELECT m FROM Menu m WHERE m.store = s AND m.name LIKE %:keyword%)")
-    Page<Store> searchByKeywordPaged(@Param("keyword") String keyword, Pageable pageable);
-
-
-    @EntityGraph(attributePaths = "menus")
-    @Query("SELECT s FROM Store s WHERE s.name LIKE %:keyword% OR EXISTS (SELECT m FROM Menu m WHERE m.store = s AND m.name LIKE %:keyword%)")
-    List<Store> searchByKeywordAll(@Param("keyword") String keyword, Pageable pageable);
 
 
     List<Store> findByIdIn(List<Long> storeIds);
+
+    @Query(value = """
+            SELECT DISTINCT s.*
+            FROM store s
+            LEFT JOIN menu m ON m.store_id = s.id
+            WHERE MATCH(s.name) AGAINST (:keyword IN BOOLEAN MODE)
+               OR MATCH(m.name) AGAINST (:keyword IN BOOLEAN MODE)
+            LIMIT :limit OFFSET :offset
+            """, nativeQuery = true)
+    List<Store> searchByKeywordNative(
+            @Param("keyword") String keyword,
+            @Param("limit") int limit,
+            @Param("offset") int offset
+    );
+    @Query(value = """
+            SELECT COUNT(DISTINCT s.id)
+            FROM store s
+            LEFT JOIN menu m ON m.store_id = s.id
+            WHERE MATCH(s.name) AGAINST (:keyword IN BOOLEAN MODE)
+               OR MATCH(m.name) AGAINST (:keyword IN BOOLEAN MODE)
+            """, nativeQuery = true)
+    long countByKeywordNative(@Param("keyword") String keyword);
 }

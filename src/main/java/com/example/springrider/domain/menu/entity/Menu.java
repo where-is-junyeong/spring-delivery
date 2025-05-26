@@ -3,12 +3,7 @@ package com.example.springrider.domain.menu.entity;
 import com.example.springrider.domain.common.entity.BaseEntity;
 import com.example.springrider.domain.menu.dto.request.MenuRequestDto;
 import com.example.springrider.domain.store.entity.Store;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +13,8 @@ import lombok.Setter;
 @Builder
 @Entity
 @Getter
-@Table(name = "menu")
+@Table(name = "menu",
+        indexes = {@Index(name = "idx_menu_name", columnList = "name")})
 @AllArgsConstructor
 @NoArgsConstructor
 public class Menu extends BaseEntity {

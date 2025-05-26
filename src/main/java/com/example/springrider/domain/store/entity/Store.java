@@ -9,16 +9,8 @@ import com.example.springrider.domain.store.dto.request.UpdateStoreRequestDto;
 import com.example.springrider.domain.store.enums.StoreStatus;
 import com.example.springrider.domain.user.entity.User;
 import com.example.springrider.global.exception.InvalidRequestException;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +24,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
+import org.springframework.data.redis.core.index.Indexed;
 
 @Builder
 @Entity
 @Getter
 @BatchSize(size = 100)
-@Table(name = "store")
+@Table(name = "store", indexes = {
+        @Index(name = "idx_store_name", columnList = "name")
+})
 @AllArgsConstructor
 @NoArgsConstructor
 public class Store extends BaseEntity {

@@ -55,7 +55,7 @@ public class UserService {
 
         CustomUserPrincipal userPrincipal = new CustomUserPrincipal(user);
 
-        //토큰 생성은 JwtTokenProvider 사용
+        // 🔽 토큰 생성은 JwtTokenProvider 사용
         String accessToken = jwtTokenProvider.generateAccessToken(
                 new UsernamePasswordAuthenticationToken(
                         userPrincipal, null, userPrincipal.getAuthorities())

@@ -28,9 +28,14 @@ public class SearchService {
      * 검색어가 상점명 또는 메뉴명에 포함된 경우 로그 저장 (즉시 DB 저장)
      */
     public Page<SearchResponseDto> findv1(String keyword, Pageable pageable) {
-        Page<Store> storePage = storeRepository.searchByKeywordPaged(keyword, pageable);
 
-        storePage.forEach(store -> {
+        int limit = pageable.getPageSize();
+        int offset = (int) pageable.getOffset();
+
+        List<Store> stores = storeRepository.searchByKeywordNative(keyword, limit, offset);
+        long total = storeRepository.countByKeywordNative(keyword);
+
+        stores.forEach(store -> {
             // 상점 이름에 키워드 포함 시 즉시 로그 저장
             if (store.getName().contains(keyword)) {
                 searchLogService.create(store.getName());
@@ -42,7 +47,7 @@ public class SearchService {
                     .filter(menuName -> menuName.contains(keyword))
                     .forEach(searchLogService::create);
         });
-
+        Page<Store> storePage=new PageImpl<>(stores, pageable, total);
         return storePage.map(SearchResponseDto::of);
     }
     /**
@@ -77,22 +82,24 @@ public class SearchService {
     }
 
     private Page<SearchResponseDto> handleCacheMiss(String keyword, Pageable pageable) {
+        int limit = pageable.getPageSize();
+        int offset = (int) pageable.getOffset();
 
-        Page<Store> storePage = storeRepository.searchByKeywordPaged(keyword, pageable);
-        List<Store> allStores = storeRepository.searchByKeywordWithLimit(keyword, pageable.getOffset(), (long) pageable.getPageSize()); // 전체 ID 확보용
+        List<Store> stores = storeRepository.searchByKeywordNative(keyword, limit, offset);
+        long total = storeRepository.countByKeywordNative(keyword);
 
-        if (!allStores.isEmpty()) {
-            redisSearchUtil.updateIndex(keyword,allStores);
+        if (!stores.isEmpty()) {
+            redisSearchUtil.updateIndex(keyword,stores);
         }
 
-        boolean matches = storePage.stream().anyMatch(store ->
+        boolean matches = stores.stream().anyMatch(store ->
                 store.getName().contains(keyword) ||
                         store.getMenus().stream().anyMatch(menu -> menu.getName().contains(keyword)));
 
         if (matches) {
             searchLogService.enqueue(keyword);
         }
-
+        Page<Store> storePage=new PageImpl<>(stores, pageable, total);
         return storePage.map(SearchResponseDto::of);
     }
 
