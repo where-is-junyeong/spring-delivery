@@ -133,4 +133,7 @@ JWT_KEY=your_jwt_key
 
 ![img_3.png](img_3.png)
 
+## 검색 API (V1_RDBMS vs V2_Redis)
+![img_4_nGrinder](img_4_nGrinder.jpeg)
+
 <br/>
